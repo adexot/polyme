@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
+import type { Activity } from "@/types/polymarket";
 
 export const Route = createFileRoute("/activity")({
 	component: RouteComponent,
@@ -177,31 +178,6 @@ function RouteComponent() {
 			</div>
 		</main>
 	);
-}
-
-
-type Activity = {
-	proxyWallet: string;
-	timestamp: number;
-	conditionId: string;
-	type: string;
-	size: number;
-	usdcSize: number;
-	transactionHash: string;
-	price: number;
-	asset: string;
-	side: string;
-	outcomeIndex: number;
-	title: string;
-	slug: string;
-	icon: string;
-	eventSlug: string;
-	outcome: string;
-	name: string;
-	pseudonym: string;
-	bio: string;
-	profileImage: string;
-	profileImageOptimized: string;
 }
 
 export const ActivityTable = ({ activity }: { activity: Activity }) => {
