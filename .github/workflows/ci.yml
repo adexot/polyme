@@ -42,6 +42,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate routes type # needed to prevent type check failure on CI
+        run: npm run generate:routes
+
       - name: Run TypeScript type check
         run: npm run build:types
 
