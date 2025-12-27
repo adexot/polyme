@@ -14,9 +14,7 @@
 		"format": "prettier --write .",
 		"lint": "eslint .",
 		"check": "npm run lint && prettier --check .",
-		"check:fix": "npm run lint && prettier --write .",
-		"generate:routes": "tanstack-router generate",
-		"prebuild": "npm run generate:routes"
+		"check:fix": "npm run lint && prettier --write ."
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.19.7",
