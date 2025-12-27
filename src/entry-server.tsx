@@ -45,7 +45,9 @@ app.route("/api", apiHandler);
 
 app.get("/test", testHandler);
 
-if (process.env.NODE_ENV === "production") {
+const isProduction = process.env.NODE_ENV === "production";
+
+if (isProduction) {
 	app.use(compress());
 
 	app.use(
@@ -80,7 +82,7 @@ app.use("*", async (c) => {
 });
 
 // Start server in both development and production
-if (process.env.NODE_ENV === "production") {
+if (isProduction) {
 	serve(
 		{
 			fetch: app.fetch,
