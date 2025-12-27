@@ -1,0 +1,11 @@
+{
+	"projectName": "tanstack-hono",
+	"version": 1,
+	"framework": "react-cra",
+	"packageManager": "npm",
+	"typescript": true,
+	"tailwind": true,
+	"git": true,
+	"mode": "file-router",
+	"chosenAddOns": ["eslint", "prettier"]
+}
