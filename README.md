@@ -1,5 +1,7 @@
-# TanStack Router + Hono SSR Template
+# PolyMe
+A personalized polymarket profile to track all trading actions with an elegant UI.
 
+### Tech stack
 A modern, production-ready full-stack React application template combining **TanStack Router** with **Hono** for server-side rendering. This setup delivers fast, SEO-friendly applications with excellent developer experience.
 
 [![CI](https://github.com/bskimball/tanstack-hono/actions/workflows/ci.yml/badge.svg)](https://github.com/bskimball/tanstack-hono/actions/workflows/ci.yml)
@@ -11,10 +13,10 @@ A modern, production-ready full-stack React application template combining **Tan
 
 ```bash
 # Clone the template
-npx degit bskimball/tanstack-hono my-app
+npx degit bskimball/tanstack-hono polyme
 
 # Navigate to your project
-cd my-app
+cd polyme
 
 # Run the interactive setup script
 bash scripts/setup.sh
@@ -30,10 +32,10 @@ The setup script will:
 
 ```bash
 # Clone the template
-npx degit bskimball/tanstack-hono my-app
+npx degit bskimball/tanstack-hono polyme
 
 # Navigate to your project
-cd my-app
+cd polyme
 
 # Copy environment file
 cp .env.example .env
