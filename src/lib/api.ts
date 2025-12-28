@@ -1,5 +1,5 @@
 import { hc } from "hono/client";
-import type { ApiRoutes } from "../routes/-api";
+import type { ApiRoutes } from "@/routes/-api";
 
 /**
  * Hono RPC client for type-safe API requests.

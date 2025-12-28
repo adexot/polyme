@@ -2,14 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { Activity } from "@/types/polymarket";
+import { convertTimestampToDate } from "@/lib/utils";
 
 export const Route = createFileRoute("/activity")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const [userInput, setUserInput] = useState("");
-	const [activityData, setActivityData] = useState<unknown[] | null>(null);
+	const [userInput, setUserInput] = useState(import.meta.env.VITE_TEST_USER || "");
+	const [activityData, setActivityData] = useState<Activity[] | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -109,6 +110,20 @@ function RouteComponent() {
 						)}
 					</div>
 
+					{/* Loading */}
+					{!userInput && !loading && (
+						<div className="text-center py-12 text-[var(--color-ash)]">
+							<p>Enter a user address to search for activity.</p>
+						</div>
+					)}
+
+					{/* No data */}
+					{activityData && activityData.length === 0 && (
+						<div className="text-center py-12 text-[var(--color-ash)]">
+							<p>No activity found for this user.</p>
+						</div>
+					)}
+
 					{/* Activity Table */}
 					{activityData && activityData.length > 0 && (
 						<div className="bg-[var(--color-slate)] border border-[var(--color-mist)] rounded-lg overflow-hidden">
@@ -121,57 +136,23 @@ function RouteComponent() {
 											>
 												Time
 											</th>
-										</tr>
-										<tr>
 											<th
 												className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider"
 											>
 												Title
 											</th>
-										</tr>
-										<tr>
 											<th
 												className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider"
 											>
-												Time
+												Type
 											</th>
 										</tr>
 									</thead>
 									<tbody className="divide-y divide-[var(--color-mist)]">
-										{activityData.map((activity, index) => (
-											<tr
-												key={index}
-												className="hover:bg-[var(--color-charcoal)]/50 transition-colors"
-											>
-												{Object.values(
-													activity as Record<string, unknown>
-												).map((value, cellIndex) => (
-													<td
-														key={cellIndex}
-														className="px-6 py-4 text-sm text-[var(--color-bone)]"
-													>
-														{typeof value === "object" && value !== null
-															? JSON.stringify(value)
-															: String(value ?? "-")}
-													</td>
-												))}
-											</tr>
-										))}
+										{activityData.map((activity, index) => (<ActivityTable key={index} activity={activity} />))}
 									</tbody>
 								</table>
 							</div>
-						</div>
-					)}
-
-					{activityData && activityData.length === 0 && (
-						<div className="text-center py-12 text-[var(--color-ash)]">
-							<p>No activity found for this user.</p>
-						</div>
-					)}
-
-					{!userInput && !loading && (
-						<div className="text-center py-12 text-[var(--color-ash)]">
-							<p>Enter a user address to search for activity.</p>
 						</div>
 					)}
 				</div>
@@ -188,7 +169,17 @@ export const ActivityTable = ({ activity }: { activity: Activity }) => {
 			<td
 				className="px-6 py-4 text-sm text-[var(--color-bone)]"
 			>
-				{activity.timestamp}
+				{convertTimestampToDate(activity.timestamp)}
+			</td>
+			<td
+				className="px-6 py-4 text-sm text-[var(--color-bone)]"
+			>
+				{activity.title}
+			</td>
+			<td
+				className="px-6 py-4 text-sm text-[var(--color-bone)]"
+			>
+				{activity.type}
 			</td>
 		</tr>
 	)
