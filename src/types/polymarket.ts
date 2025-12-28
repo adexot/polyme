@@ -20,4 +20,4 @@ export type Activity = {
 	bio: string;
 	profileImage: string;
 	profileImageOptimized: string;
-}
+};

@@ -41,10 +41,7 @@ const routes = new Hono()
 			const baseUrl = process.env.DATA_API_BASEURL || process.env.POLYMARKET_DATA_API;
 
 			if (!baseUrl) {
-				return c.json(
-					{ error: "API base URL is not configured" },
-					500
-				);
+				return c.json({ error: "API base URL is not configured" }, 500);
 			}
 
 			try {
@@ -75,15 +72,15 @@ const routes = new Hono()
 				return c.json(
 					{
 						error: "Failed to fetch user activity",
-						message:
-							error instanceof Error ? error.message : "Unknown error",
+						message: error instanceof Error ? error.message : "Unknown error",
 					},
 					500
 				);
 			}
 		}
 	)
-	.all("/polymarket/*",
+	.all(
+		"/polymarket/*",
 		zValidator(
 			"query",
 			z.object({
@@ -94,10 +91,7 @@ const routes = new Hono()
 			const baseUrl = process.env.DATA_API_BASEURL || process.env.POLYMARKET_DATA_API;
 
 			if (!baseUrl) {
-				return c.json(
-					{ error: "API base URL is not configured" },
-					500
-				);
+				return c.json({ error: "API base URL is not configured" }, 500);
 			}
 
 			try {
@@ -125,7 +119,7 @@ const routes = new Hono()
 					method,
 					headers: {
 						"Content-Type": "application/json",
-						"Accept": "application/json",
+						Accept: "application/json",
 					},
 				};
 
@@ -170,13 +164,13 @@ const routes = new Hono()
 				return c.json(
 					{
 						error: "Failed to proxy request to Polymarket API",
-						message:
-							error instanceof Error ? error.message : "Unknown error",
+						message: error instanceof Error ? error.message : "Unknown error",
 					},
 					500
 				);
 			}
-		});
+		}
+	);
 
 export type ApiRoutes = typeof routes;
 export const handler = routes;

@@ -6,6 +6,6 @@ export function convertTimestampToDate(timestamp: number) {
 		hour: "numeric",
 		minute: "2-digit",
 		hour12: true,
-		timeZone: "UTC" // need to use UTC to guarantee consistent output
+		timeZone: "UTC", // need to use UTC to guarantee consistent output
 	});
 }

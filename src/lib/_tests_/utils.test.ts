@@ -1,31 +1,7 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { convertTimestampToDate } from "../utils";
 
 describe("convertTimestampToDate", () => {
-	// Save the original timeZone getter to restore later
-	let originalTimeZone: PropertyDescriptor | undefined;
-
-	beforeAll(() => {
-		// Force Intl.DateTimeFormat to use UTC for all dates in Node
-		// @ts-ignore
-		originalTimeZone = Object.getOwnPropertyDescriptor(Intl.DateTimeFormat.prototype, 'resolvedOptions');
-		// Monkey-patch resolvedOptions to always return UTC as timeZone
-		// This does not affect the output for browsers, but for Node/Vitest it ensures consistency
-		Object.defineProperty(Intl.DateTimeFormat.prototype, 'resolvedOptions', {
-			value: function () {
-				return { timeZone: 'UTC' };
-			},
-			configurable: true,
-		});
-	});
-
-	afterAll(() => {
-		// Restore the original resolvedOptions if it existed
-		if (originalTimeZone) {
-			Object.defineProperty(Intl.DateTimeFormat.prototype, 'resolvedOptions', originalTimeZone);
-		}
-	});
-
 	it("converts a UNIX timestamp (seconds) to a formatted date string in UTC", () => {
 		// 01 Jan 2024 12:34:00 UTC
 		const timestamp = 1704112440;
@@ -47,4 +23,3 @@ describe("convertTimestampToDate", () => {
 		expect(convertTimestampToDate(32503680000)).toBe("1/1/3000, 12:00 AM");
 	});
 });
-

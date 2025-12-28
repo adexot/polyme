@@ -246,7 +246,7 @@ function RootComponent() {
 				<HeadContent />
 			</head>
 			<body>
-				<Header />
+				{/* <Header /> */}
 				<Outlet />
 				<Suspense>
 					<TanStackRouterDevtools position="bottom-right" />

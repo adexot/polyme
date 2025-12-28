@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import type { Activity } from "@/types/polymarket";
 import { convertTimestampToDate } from "@/lib/utils";
@@ -38,9 +38,7 @@ function RouteComponent() {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				throw new Error(
-					errorData.error || "Failed to fetch user activity"
-				);
+				throw new Error(errorData.error || "Failed to fetch user activity");
 			}
 
 			const data = await response.json();
@@ -48,9 +46,7 @@ function RouteComponent() {
 			const activities = Array.isArray(data) ? data : data.data || [];
 			setActivityData(activities);
 		} catch (err) {
-			setError(
-				err instanceof Error ? err.message : "An unknown error occurred"
-			);
+			setError(err instanceof Error ? err.message : "An unknown error occurred");
 			setActivityData(null);
 		} finally {
 			setLoading(false);
@@ -68,6 +64,33 @@ function RouteComponent() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [debouncedUser]);
 
+	// Calculate volume metrics
+	const volumeMetrics = useMemo(() => {
+		if (!activityData || activityData.length === 0) {
+			return {
+				buyCount: 0,
+				buyTotal: 0,
+				redeemCount: 0,
+				redeemTotal: 0,
+				difference: 0,
+			};
+		}
+
+		const buyActivities = activityData.filter((a) => a.side === "BUY" || a.type === "TRADE");
+		const redeemActivities = activityData.filter((a) => a.type === "REDEEM");
+
+		const buyTotal = buyActivities.reduce((sum, a) => sum + (a.usdcSize || 0), 0);
+		const redeemTotal = redeemActivities.reduce((sum, a) => sum + (a.usdcSize || 0), 0);
+
+		return {
+			buyCount: buyActivities.length,
+			buyTotal: Number(buyTotal.toFixed(2)),
+			redeemCount: redeemActivities.length,
+			redeemTotal: Number(redeemTotal.toFixed(2)),
+			difference: Number((redeemTotal - buyTotal).toFixed(2)),
+		};
+	}, [activityData]);
+
 	return (
 		<main className="min-h-[calc(100vh-64px)] bg-[var(--color-void)] relative overflow-hidden">
 			<div className="noise-overlay" />
@@ -79,11 +102,9 @@ function RouteComponent() {
 				<div className="w-full max-w-7xl mx-auto">
 					{/* Header */}
 					<div className="mb-8">
-						<h1 className="text-4xl font-bold text-[var(--color-bone)] mb-2">
-							User Activity
-						</h1>
+						<h1 className="text-4xl font-bold text-[var(--color-bone)] mb-2">User Activity</h1>
 						<p className="text-[var(--color-ash)]">
-							Search for a user's activity on Polymarket
+							Search for a user&apos;s activity on Polymarket
 						</p>
 					</div>
 
@@ -124,6 +145,57 @@ function RouteComponent() {
 						</div>
 					)}
 
+					{/* Volume Summary Boxes */}
+					{activityData && activityData.length > 0 && (
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+							{/* BUY Volume */}
+							<div className="bg-[var(--color-slate)] border border-[var(--color-mist)] rounded-lg p-6">
+								<div className="text-sm text-[var(--color-ash)] mb-2 uppercase tracking-wider">
+									BUY Volume
+								</div>
+								<div className="text-2xl font-bold text-[var(--color-bone)] mb-1">
+									{volumeMetrics.buyCount}
+								</div>
+								<div className="text-lg text-[var(--color-coral)]">
+									${volumeMetrics.buyTotal.toLocaleString()}
+								</div>
+							</div>
+
+							{/* REDEEM Volume */}
+							<div className="bg-[var(--color-slate)] border border-[var(--color-mist)] rounded-lg p-6">
+								<div className="text-sm text-[var(--color-ash)] mb-2 uppercase tracking-wider">
+									REDEEM Volume
+								</div>
+								<div className="text-2xl font-bold text-[var(--color-bone)] mb-1">
+									{volumeMetrics.redeemCount}
+								</div>
+								<div className="text-lg text-[var(--color-cyan)]">
+									${volumeMetrics.redeemTotal.toLocaleString()}
+								</div>
+							</div>
+
+							{/* Difference */}
+							<div className="bg-[var(--color-slate)] border border-[var(--color-mist)] rounded-lg p-6">
+								<div className="text-sm text-[var(--color-ash)] mb-2 uppercase tracking-wider">
+									Difference
+								</div>
+								<div className="text-2xl font-bold text-[var(--color-bone)] mb-1">
+									{volumeMetrics.buyCount - volumeMetrics.redeemCount}
+									<span className="text-sm text-[var(--color-ash)] ml-2">unsuccessful trades</span>
+								</div>
+								<div
+									className={`text-lg ${
+										volumeMetrics.difference >= 0
+											? "text-[var(--color-cyan)]"
+											: "text-[var(--color-coral)]"
+									}`}
+								>
+									${volumeMetrics.difference.toLocaleString()}
+								</div>
+							</div>
+						</div>
+					)}
+
 					{/* Activity Table */}
 					{activityData && activityData.length > 0 && (
 						<div className="bg-[var(--color-slate)] border border-[var(--color-mist)] rounded-lg overflow-hidden">
@@ -131,25 +203,21 @@ function RouteComponent() {
 								<table className="w-full">
 									<thead className="bg-[var(--color-charcoal)] border-b border-[var(--color-mist)]">
 										<tr>
-											<th
-												className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider"
-											>
+											<th className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider">
 												Time
 											</th>
-											<th
-												className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider"
-											>
+											<th className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider">
 												Title
 											</th>
-											<th
-												className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider"
-											>
+											<th className="px-6 py-4 text-left text-xs font-semibold text-[var(--color-cyan)] uppercase tracking-wider">
 												Type
 											</th>
 										</tr>
 									</thead>
 									<tbody className="divide-y divide-[var(--color-mist)]">
-										{activityData.map((activity, index) => (<ActivityTable key={index} activity={activity} />))}
+										{activityData.map((activity, index) => (
+											<ActivityTable key={index} activity={activity} />
+										))}
 									</tbody>
 								</table>
 							</div>
@@ -163,24 +231,12 @@ function RouteComponent() {
 
 export const ActivityTable = ({ activity }: { activity: Activity }) => {
 	return (
-		<tr
-			className="hover:bg-[var(--color-charcoal)]/50 transition-colors"
-		>
-			<td
-				className="px-6 py-4 text-sm text-[var(--color-bone)]"
-			>
+		<tr className="hover:bg-[var(--color-charcoal)]/50 transition-colors">
+			<td className="px-6 py-4 text-sm text-[var(--color-bone)]">
 				{convertTimestampToDate(activity.timestamp)}
 			</td>
-			<td
-				className="px-6 py-4 text-sm text-[var(--color-bone)]"
-			>
-				{activity.title}
-			</td>
-			<td
-				className="px-6 py-4 text-sm text-[var(--color-bone)]"
-			>
-				{activity.type}
-			</td>
+			<td className="px-6 py-4 text-sm text-[var(--color-bone)]">{activity.title}</td>
+			<td className="px-6 py-4 text-sm text-[var(--color-bone)]">{activity.type}</td>
 		</tr>
-	)
-}
+	);
+};
