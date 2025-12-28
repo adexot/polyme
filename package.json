@@ -15,8 +15,8 @@
 		"lint": "eslint .",
 		"check": "npm run lint && prettier --check .",
 		"check:fix": "npm run format && prettier . --fix",
-		"deploy": "wrangler deploy",
-		"deploy:dry-run": "wrangler deploy --dry-run"
+		"deploy": "wrangler deploy  --no-bundle",
+		"deploy:dry-run": "wrangler deploy --no-bundle --dry-run"
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.19.7",
