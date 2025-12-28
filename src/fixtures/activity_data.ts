@@ -1,4 +1,4 @@
-const activityData = [
+export const activityData = [
 	{
 		proxyWallet: "0xxa",
 		timestamp: 1766870789,

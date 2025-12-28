@@ -61,7 +61,6 @@ function RouteComponent() {
 			setActivityData(null);
 			setError(null);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [debouncedUser]);
 
 	// Calculate volume metrics
