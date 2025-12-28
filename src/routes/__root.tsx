@@ -1,6 +1,5 @@
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import React, { Suspense } from "react";
-import Header from "../components/Header";
 import appCss from "../styles.css?url";
 import type { RouterContext } from "../types/router";
 
@@ -246,7 +245,6 @@ function RootComponent() {
 				<HeadContent />
 			</head>
 			<body>
-				{/* <Header /> */}
 				<Outlet />
 				<Suspense>
 					<TanStackRouterDevtools position="bottom-right" />
